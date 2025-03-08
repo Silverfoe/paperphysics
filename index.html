@@ -84,33 +84,9 @@
 
     <script>
         const scripts = {
-            "PaperAirResistance": `import math
-import numpy as np
-import matplotlib.pyplot as plt
-
-def compute_probability(x, delta_rho, velocity, height):
-    probability = math.exp(-delta_rho) * (1 - 0.1) ** (x - 1) * math.exp(-height / velocity) / math.factorial(x)
-    return f"Probability: {probability * 100:.250f}%"
-
-x = int(input_vals["x"])
-delta_rho = float(input_vals["delta_rho"])
-velocity = float(input_vals["velocity"])
-height = float(input_vals["height"])
-print(compute_probability(x, delta_rho, velocity, height))`,
+            "PaperAirResistance": `import math\nimport numpy as np\nimport matplotlib.pyplot as plt\n\ndef compute_probability(x, delta_rho, velocity, height):\n    probability = math.exp(-delta_rho) * (1 - 0.1) ** (x - 1) * math.exp(-height / velocity) / math.factorial(x)\n    return f"Probability: {probability * 100:.250f}%"\n\nx = int(input_vals["x"])\ndelta_rho = float(input_vals["delta_rho"])\nvelocity = float(input_vals["velocity"])\nheight = float(input_vals["height"])\nprint(compute_probability(x, delta_rho, velocity, height))`,
             
-            "PaperAirResistanceQuantumEdition": `import math
-import numpy as np
-import matplotlib.pyplot as plt
-
-def compute_probability(x, delta_rho, velocity, height):
-    probability = math.exp(-delta_rho) * (1 - 0.1) ** (x - 1) * math.exp(-height / velocity) / math.factorial(x)
-    return f"Quantum Edition Probability: {probability * 100:.250f}%"
-
-x = int(input_vals["x"])
-delta_rho = float(input_vals["delta_rho"])
-velocity = float(input_vals["velocity"])
-height = float(input_vals["height"])
-print(compute_probability(x, delta_rho, velocity, height))`
+            "PaperAirResistanceQuantumEdition": `import math\nimport numpy as np\nimport matplotlib.pyplot as plt\n\ndef compute_probability(x, delta_rho, velocity, height):\n    probability = math.exp(-delta_rho) * (1 - 0.1) ** (x - 1) * math.exp(-height / velocity) / math.factorial(x)\n    return f"Quantum Edition Probability: {probability * 100:.250f}%"\n\nx = int(input_vals["x"])\ndelta_rho = float(input_vals["delta_rho"])\nvelocity = float(input_vals["velocity"])\nheight = float(input_vals["height"])\nprint(compute_probability(x, delta_rho, velocity, height))`
         };
 
         function loadScript() {
@@ -119,11 +95,7 @@ print(compute_probability(x, delta_rho, velocity, height))`
             
             let inputFields = document.getElementById("inputFields");
             inputFields.innerHTML = `
-                <input type="number" id="x" placeholder="Number of papers (≥1)" required>
-                <input type="text" id="delta_rho" placeholder="Air density fluctuation (e.g., 0.12)" required>
-                <input type="text" id="velocity" placeholder="Falling velocity (m/s)" required>
-                <input type="text" id="height" placeholder="Drop height (m)" required>
-            `;
+                <input type="number" id="x" placeholder="Number of papers (≥1)" required>\n                <input type="text" id="delta_rho" placeholder="Air density fluctuation (e.g., 0.12)" required>\n                <input type="text" id="velocity" placeholder="Falling velocity (m/s)" required>\n                <input type="text" id="height" placeholder="Drop height (m)" required>\n            `;
         }
 
         async function runPython() {
@@ -138,8 +110,7 @@ print(compute_probability(x, delta_rho, velocity, height))`
                 "height": document.getElementById("height").value || 2.0
             };
             
-            let formattedCode = `input_vals = ${JSON.stringify(input_vals)}
-` + codeTemplate;
+            let formattedCode = `input_vals = ${JSON.stringify(input_vals)}\n` + codeTemplate;
             try {
                 let output = await pyodide.runPythonAsync(formattedCode);
                 document.getElementById("output").innerText = output;
