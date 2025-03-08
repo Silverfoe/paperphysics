@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Python Runner</title>
     <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/micropip/micropip.js"></script>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -83,7 +84,9 @@
 
         async function runPython() {
             let pyodide = await loadPyodide();
-            await pyodide.loadPackage(["numpy", "matplotlib"]);
+            await pyodide.loadPackage("micropip");
+            let micropip = pyodide.pyimport("micropip");
+            await micropip.install(["numpy", "matplotlib"]);
             let code = document.getElementById("pythonCode").value;
             try {
                 let output = await pyodide.runPythonAsync(code);
