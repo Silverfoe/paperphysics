@@ -51,7 +51,7 @@ def compute_probability():
 
         # Convert probability to scientific notation
         probability_percentage = probability * 100
-        print(f"\nProbability of papers landing in reverse order: {probability_percentage:.50f} %\n")
+        print(f"\nProbability of papers landing in reverse order: {probability_percentage:.250f} %\n")
 
         # Generate 3D Graphs
         generate_3d_graphs(x, delta_rho, velocity)
