@@ -56,16 +56,34 @@
 <body>
     <div class="container">
         <h1>Run Python Code in the Browser</h1>
-        <p>Paste the contents of <code>PaperAirResistance.py</code> or <code>PaperAirResistanceQuantumEdition.py</code> below and execute it.</p>
-        <textarea id="pythonCode"># Paste your Python code here</textarea>
+        <p>Select a program to run:</p>
+        <select id="scriptSelector">
+            <option value="PaperAirResistance">PaperAirResistance.py</option>
+            <option value="PaperAirResistanceQuantumEdition">PaperAirResistanceQuantumEdition.py</option>
+        </select>
+        <br>
+        <button onclick="loadScript()">Load Script</button>
+        <br><br>
+        <textarea id="pythonCode"># Python script will load here</textarea>
         <br>
         <button onclick="runPython()">Run Code</button>
         <pre id="output"></pre>
     </div>
 
     <script>
+        const scripts = {
+            "PaperAirResistance": `{{PaperAirResistance.py content here}}`,
+            "PaperAirResistanceQuantumEdition": `{{PaperAirResistanceQuantumEdition.py content here}}`
+        };
+
+        function loadScript() {
+            let selectedScript = document.getElementById("scriptSelector").value;
+            document.getElementById("pythonCode").value = scripts[selectedScript];
+        }
+
         async function runPython() {
             let pyodide = await loadPyodide();
+            await pyodide.loadPackage(["numpy", "matplotlib"]);
             let code = document.getElementById("pythonCode").value;
             try {
                 let output = await pyodide.runPythonAsync(code);
