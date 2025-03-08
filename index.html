@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Python Runner</title>
     <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/micropip/micropip.js"></script>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -24,7 +23,7 @@
         }
         textarea {
             width: 100%;
-            height: 200px;
+            height: 400px;
             border-radius: 5px;
             border: none;
             padding: 10px;
@@ -52,6 +51,16 @@
             text-align: left;
             overflow-x: auto;
         }
+        input {
+            width: 80%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: none;
+            font-size: 14px;
+            background: #444;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -65,7 +74,9 @@
         <br>
         <button onclick="loadScript()">Load Script</button>
         <br><br>
-        <textarea id="pythonCode"># Python script will load here</textarea>
+        <textarea id="pythonCode" readonly># Python script will load here</textarea>
+        <br>
+        <div id="inputFields"></div>
         <br>
         <button onclick="runPython()">Run Code</button>
         <pre id="output"></pre>
@@ -73,23 +84,64 @@
 
     <script>
         const scripts = {
-            "PaperAirResistance": `{{PaperAirResistance.py content here}}`,
-            "PaperAirResistanceQuantumEdition": `{{PaperAirResistanceQuantumEdition.py content here}}`
+            "PaperAirResistance": `import math
+import numpy as np
+import matplotlib.pyplot as plt
+
+def compute_probability(x, delta_rho, velocity, height):
+    probability = math.exp(-delta_rho) * (1 - 0.1) ** (x - 1) * math.exp(-height / velocity) / math.factorial(x)
+    return f"Probability: {probability * 100:.250f}%"
+
+x = int(input_vals["x"])
+delta_rho = float(input_vals["delta_rho"])
+velocity = float(input_vals["velocity"])
+height = float(input_vals["height"])
+print(compute_probability(x, delta_rho, velocity, height))`,
+            
+            "PaperAirResistanceQuantumEdition": `import math
+import numpy as np
+import matplotlib.pyplot as plt
+
+def compute_probability(x, delta_rho, velocity, height):
+    probability = math.exp(-delta_rho) * (1 - 0.1) ** (x - 1) * math.exp(-height / velocity) / math.factorial(x)
+    return f"Quantum Edition Probability: {probability * 100:.250f}%"
+
+x = int(input_vals["x"])
+delta_rho = float(input_vals["delta_rho"])
+velocity = float(input_vals["velocity"])
+height = float(input_vals["height"])
+print(compute_probability(x, delta_rho, velocity, height))`
         };
 
         function loadScript() {
             let selectedScript = document.getElementById("scriptSelector").value;
             document.getElementById("pythonCode").value = scripts[selectedScript];
+            
+            let inputFields = document.getElementById("inputFields");
+            inputFields.innerHTML = `
+                <input type="number" id="x" placeholder="Number of papers (≥1)" required>
+                <input type="text" id="delta_rho" placeholder="Air density fluctuation (e.g., 0.12)" required>
+                <input type="text" id="velocity" placeholder="Falling velocity (m/s)" required>
+                <input type="text" id="height" placeholder="Drop height (m)" required>
+            `;
         }
 
         async function runPython() {
             let pyodide = await loadPyodide();
-            await pyodide.loadPackage("micropip");
-            let micropip = pyodide.pyimport("micropip");
-            await micropip.install(["numpy", "matplotlib"]);
-            let code = document.getElementById("pythonCode").value;
+            await pyodide.loadPackage(["numpy", "matplotlib"]);
+            let codeTemplate = document.getElementById("pythonCode").value;
+            
+            let input_vals = {
+                "x": document.getElementById("x").value || 1,
+                "delta_rho": document.getElementById("delta_rho").value || 0.12,
+                "velocity": document.getElementById("velocity").value || 3.5,
+                "height": document.getElementById("height").value || 2.0
+            };
+            
+            let formattedCode = `input_vals = ${JSON.stringify(input_vals)}
+` + codeTemplate;
             try {
-                let output = await pyodide.runPythonAsync(code);
+                let output = await pyodide.runPythonAsync(formattedCode);
                 document.getElementById("output").innerText = output;
             } catch (error) {
                 document.getElementById("output").innerText = "Error: " + error;
